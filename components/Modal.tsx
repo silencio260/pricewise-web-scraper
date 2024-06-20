@@ -1,0 +1,173 @@
+'use client'
+
+import { FormEvent, useState} from 'react'
+import { Button, Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react'
+import Image from 'next/image'
+import { addUserEamilToProduct } from '@/lib/actions'
+
+interface Props {
+    productId: string
+}
+
+const Modal = ({productId}: Props) => {
+
+    const [isOpen, setIsOpen] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [email, setEmail] = useState('')
+
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        
+        setIsSubmitting(true)
+
+        await addUserEamilToProduct(productId, email)
+
+        setIsSubmitting(false)
+        setEmail('')
+        closeModal()
+    }
+
+    const openModal = () => setIsOpen(true)
+
+    const closeModal = () => setIsOpen(false)
+
+  return (
+    <>
+        <button type='button' className='btn' onClick={openModal}>
+            Track
+        </button>
+
+        {/* <Transition appear show={isOpen}>
+        <Dialog as="div" className="relative z-10 focus:outline-none" onClose={close}>
+          <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <TransitionChild
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 transform-[scale(95%)]"
+                enterTo="opacity-100 transform-[scale(100%)]"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 transform-[scale(100%)]"
+                leaveTo="opacity-0 transform-[scale(95%)]"
+              >
+                <DialogPanel className="w-full max-w-md rounded-xl bg-white/5 p-6 backdrop-blur-2xl">
+                  <DialogTitle as="h3" className="text-base/7 font-medium text-white">
+                    Payment successful
+                  </DialogTitle>
+                  <p className="mt-2 text-sm/6 text-white/50">
+                    Your payment has been successfully submitted. We’ve sent you an email with all of the details of
+                    your order.
+                  </p>
+                  <div className="mt-4">
+                    <Button
+                      className="inline-flex items-center gap-2 rounded-md bg-gray-700 py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-600 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white"
+                      onClick={close}
+                    >
+                      Got it, thanks!
+                    </Button>
+                  </div>
+                </DialogPanel>
+              </TransitionChild>
+            </div>
+          </div>
+        </Dialog>
+        </Transition> */}
+
+        <Transition appear show={isOpen}>
+            <Dialog open={isOpen} onClose={closeModal} className={'dialog-container'}>
+                <div className="min-h-screen px-4 text-center">
+                    {/* <TransitionChild           
+                        enter='opacity-0'
+                        enterFrom='opacity-0'
+                        enterTo='opacity-100'
+                        leave='ease-in duration-200'
+                        leaveFrom='opacity-100'
+                        leaveTo='opacity-0'
+                    >
+
+                    </TransitionChild> */}
+                    
+                    <span className="inline-block h-screen align-middle" 
+                        aria-hidden='true'/>
+                    <TransitionChild      
+                        enter='ease-out duration-300'
+                        enterFrom='opacity-0 scale-95'
+                        enterTo='opacity-100 scale-100'
+                        leave='ease-in duration-200'
+                        leaveFrom='opacity-100 scale-100'
+                        leaveTo='opacity-0 scale-95'
+                    >
+                        <div className="dialog-content">
+                            <div className="flex flex-col">
+                                <div className="flex justify-between">
+                                    <div className="p-3 border border-gray-200 rounded-10">
+                                        <Image
+                                            src={'/assets/icons/logo.svg'}
+                                            alt='logo'
+                                            width={28}
+                                            height={28}
+                                        />
+                                    </div>
+
+                                    <Image
+                                        src={'/assets/icons/x-close.svg'}
+                                        alt='close'
+                                        width={28}
+                                        height={28}
+                                        className='curosr-pointer'
+                                        onClick={closeModal}
+                                    />
+                                </div>
+
+                                <h4 className='dialog-head_text'>
+                                    Stay updated with product pricing alerts right to your inbox!
+                                </h4>
+
+                                <p className='text-sm text-gray-600 mt-2'>
+                                    Never miss a bargin again with our timely alerts!
+                                </p>
+                                
+                            </div>
+
+                            <form 
+                                className="flex flex-col mt-5"
+                                onSubmit={handleSubmit}
+                            >
+                                <label htmlFor="email" className="text-sm font-medium text-gray">
+                                    Email address
+                                </label>
+                                <div className="dialog-input_container">
+                                    <Image 
+                                        src={'/assets/icons/mail.svg'}
+                                        alt='mail'
+                                        width={18}
+                                        height={18}
+                                    />
+
+                                    <input 
+                                        required
+                                        type='email'
+                                        id='email'
+                                        placeholder='Enter your email address'
+                                        className='dialog-input'
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
+                                </div>
+
+                                <button type='submit' className='dialog-btn'>
+                                    {isSubmitting ? 'Submitting...' :'Track'}
+                                </button>
+                            </form>
+                        </div>
+
+                    </TransitionChild>
+                </div>
+            </Dialog>
+        </Transition>
+        
+         
+    </>
+  )
+}
+
+export default Modal
